@@ -8,7 +8,17 @@ import pump = require('mz-modules/pump');
 export default class HomeController extends Controller {
   public async index() {
     const { ctx } = this;
-    ctx.body = await ctx.service.test.sayHi('egg');
+    // console.log('ctx.session.userId123 =', ctx.session.userId);
+
+    // const namespace:any = app.io.of('/');
+    // namespace.emit('event', '飞机');
+    ctx.logger.info('ctx.session.userId =', ctx.session.userId);
+
+    // console.log('value =', value);
+    // await ctx.socket.emit('event', '不知道搞什么飞机');
+    // ctx.body = await ctx.service.test.sayHi('egg');
+    ctx.body = '123' + ctx.session.userId;
+
   }
 
   public async getData() {

@@ -19,15 +19,21 @@ export default (appInfo: EggAppInfo) => {
   config.security = {
     csrf: {
       enable: false,
-      ignoreJSON: true,
     },
-    domainWhiteList: [ '*' ],
+    domainWhiteList: [
+      'http://localhost:9909',
+      'http://127.0.0.1:9909',
+      'http://192.168.100.100:9909',
+      'http://0.0.0.0:9909',
+    ],
   };
   config.cors = {
-    origin: '*', // 匹配规则  域名+端口  *则为全匹配
+    credentials: true, // 支持cookie跨域
+    // origin: 'http://127.0.0.1:9909', //可以不设置
     allowMethods: 'GET,HEAD,PUT,POST,DELETE,PATCH',
   };
 
+  // 可以访问静态文件配置
   config.static = {
     prefix: '/public',
     dir: path.join(appInfo.baseDir, 'app/public'),
@@ -38,16 +44,14 @@ export default (appInfo: EggAppInfo) => {
     maxFiles: 1000,
   };
 
-
-  config.multipart = {
-    mode: 'file',
-  };
-
+  // 配置 上传文件
   config.multipart = {
     fileSize: '100mb',
     mode: 'stream',
-    fileExtensions: [// images
-      '.jpg', '.jpeg', // image/jpeg
+    fileExtensions: [
+      // images
+      '.jpg',
+      '.jpeg', // image/jpeg
       '.png', // image/png, image/x-png
       '.gif', // image/gif
       '.bmp', // image/bmp
@@ -57,20 +61,72 @@ export default (appInfo: EggAppInfo) => {
       '.psd',
       // text
       '.svg',
-      '.js', '.jsx',
+      '.js',
+      '.jsx',
       '.json',
-      '.css', '.less',
-      '.html', '.htm',
+      '.css',
+      '.less',
+      '.html',
+      '.htm',
       '.xml',
       // tar
       '.zip',
-      '.gz', '.tgz', '.gzip',
+      '.gz',
+      '.tgz',
+      '.gzip',
       // video
       '.mp3',
       '.mp4',
-      '.avi' ], // 增加对 xlsx 扩展名的文件支持
+      '.avi',
+    ], // 增加对 xlsx 扩展名的文件支持
   };
 
+  // 配置 socket
+  config.io = {
+    init: {}, // passed to engine.io
+    namespace: {
+      '/': {
+        connectionMiddleware: [ 'connection' ],
+        packetMiddleware: [],
+      },
+      /* '/example': {
+        connectionMiddleware: [],
+        packetMiddleware: [],
+      }, */
+    },
+    /*
+    generateId: req => { // 自定义 socket.id 生成函数
+      console.log('req =', req);
+      // console.log('data =', data);
+      return '111111'; // custom id must be unique
+    },
+    */
+    redis: {
+      // 配置socket里面的redis
+      host: '127.0.0.1',
+      port: 6379,
+      auth_pass: '',
+      db: 0,
+    },
+  };
+
+  // 配置redis
+  config.redis = {
+    client: {
+      port: 6379,
+      host: '127.0.0.1',
+      password: '',
+      db: 0,
+    },
+  };
+
+  /*   config.session = {
+    key: 'SESSION_ID', // 设置session cookie里面的key
+    maxAge: 1000 * 60 * 30, // 设置过期时间
+    httpOnly: true,
+    encrypt: true,
+    renew: true, // renew等于true 那么每次刷新页面的时候 session都会被延期
+  }; */
 
   // the return config will combines to EggAppConfig
   return {
